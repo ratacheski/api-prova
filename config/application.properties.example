@@ -1,0 +1,3 @@
+spring.datasource.url=jdbc:mysql://localhost/<NOME_DO_SEU_BANCO>?createDatabaseIfNotExist=true&ServerTimezone=UTC
+spring.datasource.username=<SEU_USUARIO>
+spring.datasource.password=<SUA_SENHA>
