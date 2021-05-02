@@ -1,6 +1,9 @@
 package com.ratacheski.apiprova.api.controller;
 
 import com.ratacheski.apiprova.api.model.input.VendedorInput;
+import com.ratacheski.apiprova.api.model.output.ClienteListOutput;
+import com.ratacheski.apiprova.api.model.output.ClienteOutput;
+import com.ratacheski.apiprova.api.model.output.VendedorListOutput;
 import com.ratacheski.apiprova.api.model.output.VendedorOutput;
 import com.ratacheski.apiprova.domain.model.Vendedor;
 import com.ratacheski.apiprova.domain.service.VendedorService;
@@ -25,11 +28,17 @@ public class VendedorController {
 
 
     @GetMapping
-    public List<VendedorOutput> list() {
-        var vendedores = vendedorService.list();
-        return vendedores.stream()
-                .map(vendedor -> modelMapper.map(vendedor, VendedorOutput.class))
-                .collect(Collectors.toList());
+    public VendedorListOutput list(@RequestParam(required = false) String filter,
+                                   @RequestParam(required = false, defaultValue = "asc") String sort,
+                                   @RequestParam(required = false, defaultValue = "0") int page,
+                                   @RequestParam(required = false, defaultValue = "10") int size) {
+        var vendedores = vendedorService.list(filter, sort, page, size);
+        var list = vendedores.stream()
+                .map(vendedor ->
+                        modelMapper.map(vendedor, VendedorOutput.class)
+                ).collect(Collectors.toList());
+        var count = vendedorService.count();
+        return new VendedorListOutput(count,list);
     }
 
     @PostMapping

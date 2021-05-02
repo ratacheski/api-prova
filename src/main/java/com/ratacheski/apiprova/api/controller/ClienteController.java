@@ -1,7 +1,10 @@
 package com.ratacheski.apiprova.api.controller;
 
 import com.ratacheski.apiprova.api.model.input.ClienteInput;
+import com.ratacheski.apiprova.api.model.output.ClienteListOutput;
 import com.ratacheski.apiprova.api.model.output.ClienteOutput;
+import com.ratacheski.apiprova.api.model.output.ProdutoListOutput;
+import com.ratacheski.apiprova.api.model.output.ProdutoOutput;
 import com.ratacheski.apiprova.domain.model.Cliente;
 import com.ratacheski.apiprova.domain.service.ClienteService;
 import org.modelmapper.ModelMapper;
@@ -27,11 +30,17 @@ public class ClienteController {
 
 
     @GetMapping
-    public List<ClienteOutput> list() {
-        var clientes = clienteService.list();
-        return clientes.stream()
-                .map(cliente -> modelMapper.map(cliente, ClienteOutput.class))
-                .collect(Collectors.toList());
+    public ClienteListOutput list(@RequestParam(required = false) String filter,
+                                  @RequestParam(required = false, defaultValue = "asc") String sort,
+                                  @RequestParam(required = false, defaultValue = "0") int page,
+                                  @RequestParam(required = false, defaultValue = "10") int size) {
+        var clientes = clienteService.list(filter, sort, page, size);
+        var list = clientes.stream()
+                .map(cliente ->
+                        modelMapper.map(cliente, ClienteOutput.class)
+                ).collect(Collectors.toList());
+        var count = clienteService.count();
+        return new ClienteListOutput(count,list);
     }
 
     @PostMapping
